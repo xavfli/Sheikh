@@ -28,6 +28,8 @@ BOT_TEXT = {
         "menu_contact": "Bog'lanish",
         "menu_back": "Ortga",
         "menu_buy": "Sotib olish",
+        "menu_pay_uz": "O'zbekiston uchun to'lov",
+        "menu_pay_global": "Boshqa davlatlar uchun to'lov",
         "menu_video": "Video preview",
         "menu_contact_manager": "Lichkaga yozish",
         "menu_change_lang": "Tilni almashtirish",
@@ -45,6 +47,10 @@ BOT_TEXT = {
         "credentials": "Login: <code>{login}</code>\nParol: <code>{password}</code>",
         "account_header": "<b>{title}</b>\nNarxi: <b>${price}</b>\nCategory: {category}\nPlatforma: {platform}\nRegion: {region}\nRank: {rank}\nK/D: {kd}\nLevel: {level}\nSkinlar: {skins}\n\n{description}",
         "buy_notice": "Sotib olgandan keyin login va parol bot ichida ko'rsatiladi.",
+        "payment_title": "<b>{title}</b>\n\nTo'lov turini tanlang. Menejer buyurtmani tasdiqlagandan keyin login va parol botda ochiladi.",
+        "payment_uz": "O'zbekiston uchun tavsiya: Payme yoki Click. Tugmani bosing va menejerga tayyor buyurtma bilan yozing.",
+        "payment_global": "Boshqa davlatlar uchun tavsiya: Stripe yoki xalqaro transfer. Tugmani bosing va menejerga tayyor buyurtma bilan yozing.",
+        "manager_order": "Menejerga buyurtma yuborish",
     },
     "ru": {
         "choose_language": "Выберите язык:",
@@ -55,6 +61,8 @@ BOT_TEXT = {
         "menu_contact": "Связь",
         "menu_back": "Назад",
         "menu_buy": "Купить",
+        "menu_pay_uz": "Оплата для Узбекистана",
+        "menu_pay_global": "Оплата для других стран",
         "menu_video": "Видео preview",
         "menu_contact_manager": "Написать менеджеру",
         "menu_change_lang": "Сменить язык",
@@ -72,6 +80,10 @@ BOT_TEXT = {
         "credentials": "Логин: <code>{login}</code>\nПароль: <code>{password}</code>",
         "account_header": "<b>{title}</b>\nЦена: <b>${price}</b>\nКатегория: {category}\nПлатформа: {platform}\nРегион: {region}\nРанг: {rank}\nK/D: {kd}\nУровень: {level}\nСкины: {skins}\n\n{description}",
         "buy_notice": "После покупки логин и пароль будут показаны прямо в боте.",
+        "payment_title": "<b>{title}</b>\n\nВыберите тип оплаты. После подтверждения менеджером логин и пароль откроются в боте.",
+        "payment_uz": "Для Узбекистана рекомендуются Payme или Click. Нажмите кнопку и отправьте менеджеру готовый заказ.",
+        "payment_global": "Для других стран рекомендуются Stripe или международный перевод. Нажмите кнопку и отправьте менеджеру готовый заказ.",
+        "manager_order": "Отправить заказ менеджеру",
     },
     "en": {
         "choose_language": "Choose a language:",
@@ -82,6 +94,8 @@ BOT_TEXT = {
         "menu_contact": "Contact",
         "menu_back": "Back",
         "menu_buy": "Buy now",
+        "menu_pay_uz": "Uzbekistan payment",
+        "menu_pay_global": "International payment",
         "menu_video": "Video preview",
         "menu_contact_manager": "Message manager",
         "menu_change_lang": "Change language",
@@ -99,6 +113,10 @@ BOT_TEXT = {
         "credentials": "Login: <code>{login}</code>\nPassword: <code>{password}</code>",
         "account_header": "<b>{title}</b>\nPrice: <b>${price}</b>\nCategory: {category}\nPlatform: {platform}\nRegion: {region}\nRank: {rank}\nK/D: {kd}\nLevel: {level}\nSkins: {skins}\n\n{description}",
         "buy_notice": "After purchase, the login and password will be revealed in the bot.",
+        "payment_title": "<b>{title}</b>\n\nChoose a payment route. Login and password will be revealed in the bot after manager confirmation.",
+        "payment_uz": "Recommended for Uzbekistan: Payme or Click. Tap the button and send the prepared order to the manager.",
+        "payment_global": "Recommended for other countries: Stripe or international transfer. Tap the button and send the prepared order to the manager.",
+        "manager_order": "Send order to manager",
     },
 }
 
@@ -308,7 +326,7 @@ def account_keyboard(account: GameAccount, language: str, purchased: bool = Fals
     config = get_bot_config()
     rows = []
     if not purchased:
-        rows.append([{"text": text_for(language, "menu_buy"), "callback_data": f"buy:{account.slug}"}])
+        rows.append([{"text": text_for(language, "menu_buy"), "callback_data": f"pay:{account.slug}"}])
     if account.video_url:
         rows.append([{"text": text_for(language, "menu_video"), "url": account.video_url}])
     elif account.videos.exists():
@@ -325,6 +343,36 @@ def account_keyboard(account: GameAccount, language: str, purchased: bool = Fals
             ]
         )
     rows.append(back_menu_row(language))
+    return {"inline_keyboard": rows}
+
+
+def manager_order_url(account: GameAccount, payment_route: str) -> str:
+    contact_username = get_bot_config().contact_username
+    if not contact_username:
+        return ""
+    route_label = "O'zbekiston: Payme/Click" if payment_route == "uz" else "International: Stripe/transfer"
+    message = (
+        f"Sotib olmoqchiman:\n"
+        f"Account: {account.title}\n"
+        f"Narxi: {account.price}$\n"
+        f"To'lov: {route_label}\n"
+        f"Platforma: {account.platform}\n"
+        f"Region: {account.region}\n"
+        f"Rank: {account.rank_tier}"
+    )
+    return f"https://t.me/{contact_username}?text={urlencode({'': message})[1:]}"
+
+
+def payment_keyboard(account: GameAccount, language: str, route: str | None = None) -> dict:
+    rows = []
+    if route:
+        manager_url = manager_order_url(account, route)
+        if manager_url:
+            rows.append([{"text": text_for(language, "manager_order"), "url": manager_url}])
+    else:
+        rows.append([{"text": text_for(language, "menu_pay_uz"), "callback_data": f"payroute:uz:{account.slug}"}])
+        rows.append([{"text": text_for(language, "menu_pay_global"), "callback_data": f"payroute:global:{account.slug}"}])
+    rows.append([{"text": text_for(language, "menu_back"), "callback_data": f"account:{account.slug}"}])
     return {"inline_keyboard": rows}
 
 
@@ -394,6 +442,26 @@ def handle_buy(chat_id: int | str, message_id: int, profile: TelegramProfile, sl
     return edit_message(chat_id, message_id, text, account_keyboard(account, profile.language, purchased=True))
 
 
+def handle_payment_choice(chat_id: int | str, message_id: int, profile: TelegramProfile, slug: str, route: str | None = None):
+    account = GameAccount.objects.select_related("category").prefetch_related("videos").filter(slug=slug).first()
+    if not account:
+        return edit_message(chat_id, message_id, text_for(profile.language, "account_not_found"), {"inline_keyboard": [back_menu_row(profile.language)]})
+    text = text_for(profile.language, "payment_title", title=html.escape(account.title))
+    if route == "uz":
+        text += "\n\n" + text_for(profile.language, "payment_uz")
+    elif route == "global":
+        text += "\n\n" + text_for(profile.language, "payment_global")
+    return edit_message(chat_id, message_id, text, payment_keyboard(account, profile.language, route=route))
+
+
+def find_account_by_start_payload(payload: str) -> GameAccount | None:
+    if payload.startswith("buy_"):
+        account_id = payload.replace("buy_", "", 1)
+        if account_id.isdigit():
+            return GameAccount.objects.select_related("category").prefetch_related("videos").filter(id=account_id).first()
+    return GameAccount.objects.select_related("category").prefetch_related("videos").filter(slug=payload).first()
+
+
 def handle_purchases(chat_id: int | str, message_id: int, profile: TelegramProfile):
     purchases = Purchase.objects.filter(buyer=profile.buyer).select_related("account__category")
     if not purchases.exists():
@@ -434,7 +502,7 @@ def handle_text_message(message: dict):
             set_profile_language(profile, payload)
             return send_main_menu(chat_id, payload)
         if payload:
-            account = GameAccount.objects.select_related("category").prefetch_related("videos").filter(slug=payload).first()
+            account = find_account_by_start_payload(payload)
             if account:
                 purchased = Purchase.objects.filter(buyer=profile.buyer, account=account).exists()
                 return send_message(chat_id, build_account_text(account, profile.language, include_credentials=purchased), account_keyboard(account, profile.language, purchased=purchased))
@@ -500,6 +568,11 @@ def handle_callback(callback: dict):
         return handle_category(chat_id, message_id, data.split(":", 1)[1], profile.language)
     if data.startswith("account:"):
         return handle_account(chat_id, message_id, profile, data.split(":", 1)[1])
+    if data.startswith("payroute:"):
+        _, route, slug = data.split(":", 2)
+        return handle_payment_choice(chat_id, message_id, profile, slug, route=route)
+    if data.startswith("pay:"):
+        return handle_payment_choice(chat_id, message_id, profile, data.split(":", 1)[1])
     if data.startswith("buy:"):
         return handle_buy(chat_id, message_id, profile, data.split(":", 1)[1])
 

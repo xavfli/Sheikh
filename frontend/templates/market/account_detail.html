@@ -25,11 +25,23 @@
 
         <div class="telegram-sale-box">
           <span class="eyebrow">Telegram Sale</span>
-          <h3>Website login yo'q. Savdo Telegram orqali qilinadi.</h3>
-          <p class="purchase-note">Accountning video previewi va barcha ma'lumotlari shu sahifada turadi. Sotib olish uchun botga yozing, qo'shimcha savollar uchun esa lichkaga o'ting.</p>
+          <h3>To'lov botda tanlanadi, savdo Telegram orqali yuradi.</h3>
+          <p class="purchase-note">Account video previewi va ma'lumotlari shu sahifada. Tugmani bossangiz bot aynan shu accountni ochadi, keyin O'zbekiston yoki xalqaro to'lov yo'lini tanlaysiz.</p>
+          <div class="payment-route-grid">
+            <div class="payment-route-card">
+              <span>UZ</span>
+              <strong>O'zbekiston</strong>
+              <small>Payme yoki Click orqali kelishiladi</small>
+            </div>
+            <div class="payment-route-card">
+              <span>INT</span>
+              <strong>Boshqa davlatlar</strong>
+              <small>Stripe yoki xalqaro transfer orqali</small>
+            </div>
+          </div>
           <div class="telegram-cta-grid">
             <a class="btn btn-primary btn-block" href="{{ telegram_bot_link|default:'#' }}" target="_blank" rel="noreferrer">
-              Telegram botdan sotib olish
+              Botda sotib olishni boshlash
             </a>
             <a class="btn btn-secondary btn-block" href="{{ telegram_contact_link|default:'#' }}" target="_blank" rel="noreferrer">
               Lichkaga bog'lanish

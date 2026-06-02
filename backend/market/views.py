@@ -203,15 +203,7 @@ def build_telegram_bot_link(account):
     username = settings.TELEGRAM_BOT_USERNAME.strip().lstrip("@")
     if not username:
         return ""
-    message = (
-        f"Sotib olmoqchiman:%0A"
-        f"Account: {quote(account.title)}%0A"
-        f"Narxi: {quote(str(account.price))}$%0A"
-        f"Platforma: {quote(account.platform)}%0A"
-        f"Region: {quote(account.region)}%0A"
-        f"Rank: {quote(account.rank_tier)}"
-    )
-    return f"https://t.me/{username}?text={message}"
+    return f"https://t.me/{username}?start=buy_{account.id}"
 
 
 def build_telegram_contact_link(account):
