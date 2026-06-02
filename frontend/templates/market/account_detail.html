@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}{{ account.title }}{% endblock %}
+
+{% block content %}
+  <main class="page-shell detail-shell">
+    <section class="detail-hero reveal">
+      <div class="detail-cover" style="background-image: linear-gradient(180deg, rgba(13,13,13,0.18), rgba(13,13,13,0.9)), url('{{ account.display_image }}');">
+        <span class="eyebrow">{{ account.rank_tier }}</span>
+        <h1>{{ account.title }}</h1>
+        <p>{{ account.description }}</p>
+      </div>
+
+      <aside class="purchase-panel">
+        <div class="purchase-price">${{ account.price }}</div>
+        <ul class="detail-facts">
+          <li>Category: {% if account.category %}{{ account.category.name }}{% else %}General{% endif %}</li>
+          <li>Platform: {{ account.platform }}</li>
+          <li>Region: {{ account.region }}</li>
+          <li>Level: {{ account.level }}</li>
+          <li>KD Ratio: {{ account.kd_ratio }}</li>
+          <li>Matches: {{ account.matches_played }}</li>
+          <li>Skins: {{ account.skins_count }}</li>
+        </ul>
+
+        <div class="telegram-sale-box">
+          <span class="eyebrow">Telegram Sale</span>
+          <h3>Website login yo'q. Savdo Telegram orqali qilinadi.</h3>
+          <p class="purchase-note">Accountning video previewi va barcha ma'lumotlari shu sahifada turadi. Sotib olish uchun botga yozing, qo'shimcha savollar uchun esa lichkaga o'ting.</p>
+          <div class="telegram-cta-grid">
+            <a class="btn btn-primary btn-block" href="{{ telegram_bot_link|default:'#' }}" target="_blank" rel="noreferrer">
+              Telegram botdan sotib olish
+            </a>
+            <a class="btn btn-secondary btn-block" href="{{ telegram_contact_link|default:'#' }}" target="_blank" rel="noreferrer">
+              Lichkaga bog'lanish
+            </a>
+          </div>
+          <div class="telegram-meta">
+            <span>Bot: @{{ telegram_bot_username|default:"sheikh_market_bot" }}</span>
+            <span>Aloqa: @{{ telegram_contact_username|default:"sheikh_support" }}</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="media-grid reveal">
+      <article class="media-main">
+        {% if account.video_url %}
+          <div class="video-frame">
+            <iframe
+              src="{{ account.video_url }}"
+              title="{{ account.title }} video"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+        {% else %}
+          <div class="placeholder-panel">Asosiy video hali qo'shilmagan.</div>
+        {% endif %}
+      </article>
+
+      <article class="media-side">
+        <h2 data-i18n="video_showcase">Video showcase</h2>
+        <div class="video-list">
+          {% for video in account.videos.all %}
+            <div class="video-item">
+              <span>{{ video.duration }}</span>
+              <strong>{{ video.title }}</strong>
+              {% if video.embed_url %}
+                <a href="{{ video.embed_url }}" target="_blank" rel="noreferrer">Preview</a>
+              {% elif video.video_file %}
+                <a href="{{ video.video_file.url }}" target="_blank" rel="noreferrer">Video file</a>
+              {% else %}
+                <span class="muted-text">Preview yo'q</span>
+              {% endif %}
+            </div>
+          {% empty %}
+            <p>Hozircha qo'shimcha video yo'q.</p>
+          {% endfor %}
+        </div>
+      </article>
+    </section>
+
+    <section class="related-section reveal">
+      <div class="section-head">
+        <span class="eyebrow" data-i18n="related">Related</span>
+        <h2 data-i18n="other_accounts">Yana boshqa accountlar</h2>
+      </div>
+      <div class="catalog-grid">
+        {% for item in related_accounts %}
+          <article class="account-card tilt-card">
+            <div class="account-cover" style="background-image: linear-gradient(180deg, rgba(10,10,10,0.12), rgba(10,10,10,0.88)), url('{{ item.display_image }}');">
+              <span class="account-rank">{{ item.rank_tier }}</span>
+              <div class="account-price">${{ item.price }}</div>
+            </div>
+            <div class="account-body">
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.short_description }}</p>
+              <a class="btn btn-secondary btn-block" href="{% url 'market:account_detail' item.slug %}">Detail</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+{% endblock %}

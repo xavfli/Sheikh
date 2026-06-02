@@ -1,0 +1,4 @@
+Django==5.1.6
+Pillow==11.1.0
+stripe==12.5.0
+gunicorn==23.0.0

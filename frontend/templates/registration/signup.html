@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Ro'yxatdan o'tish{% endblock %}
+
+{% block content %}
+  <main class="auth-shell">
+    <section class="auth-card reveal">
+      <span class="eyebrow" data-i18n="create_website_account">Create Website Account</span>
+      <h1 data-i18n="new_user">Yangi foydalanuvchi</h1>
+      <form method="post" class="auth-form">
+        {% csrf_token %}
+        {% for field in form %}
+          <label>
+            <span>{{ field.label }}</span>
+            {{ field }}
+            {{ field.errors }}
+          </label>
+        {% endfor %}
+        <button class="btn btn-primary btn-block" type="submit" data-i18n="nav_signup">Ro'yxatdan o'tish</button>
+      </form>
+      <p class="auth-switch"><span data-i18n="already_have_account">Oldin account ochilganmi?</span> <a href="{% url 'market:login' %}" data-i18n="nav_login">Kiring</a></p>
+    </section>
+  </main>
+{% endblock %}

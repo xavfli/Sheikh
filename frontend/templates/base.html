@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz" id="html-root">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Sheikh{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="{% static 'site/img/favicon.svg' %}" />
+    <link rel="stylesheet" href="{% static 'site/css/styles.css' %}" />
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+    <div class="preloader" id="preloader">
+      <div class="preloader-core"></div>
+      <div class="preloader-ring"></div>
+      <p>Dropping Into Battlegrounds...</p>
+    </div>
+
+    <div class="background-grid"></div>
+    <div class="cursor-glow" id="cursor-glow"></div>
+
+    <header class="site-header" id="site-header">
+      <div class="header-ambient"></div>
+      <div class="header-sweep"></div>
+      <a class="brand" href="{% url 'market:home' %}">
+        <div class="brand-logo-wrap">
+          <img class="brand-logo" src="{% static 'site/img/sheikh-logo.svg' %}" alt="Sheikh logo" />
+          <span class="brand-logo-orbit"></span>
+          <span class="brand-spark spark-1"></span>
+          <span class="brand-spark spark-2"></span>
+          <span class="brand-spark spark-3"></span>
+        </div>
+        <div>
+          <strong>SHEIKH</strong>
+          <span data-i18n="brand_tagline">Premium gaming account showcase</span>
+        </div>
+      </a>
+
+      <nav class="site-nav">
+        <div class="lang-switcher" aria-label="language switcher">
+          <button class="lang-btn is-active" data-lang="uz" type="button">UZ</button>
+          <button class="lang-btn" data-lang="ru" type="button">RU</button>
+          <button class="lang-btn" data-lang="en" type="button">EN</button>
+        </div>
+        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}is-active{% endif %}" href="{% url 'market:home' %}#catalog" data-i18n="nav_catalog">Catalog</a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}is-active{% endif %}" href="{% url 'market:home' %}#filters" data-i18n="nav_filter">Filter</a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}is-active{% endif %}" href="{% url 'market:home' %}#showcase" data-i18n="nav_preview">Preview</a>
+      </nav>
+    </header>
+
+    {% if messages %}
+      <div class="flash-stack">
+        {% for message in messages %}
+          <div class="flash flash-{{ message.tags|default:'info' }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    <footer class="site-footer">
+      <div>
+        <strong>Sheikh</strong>
+        <p data-i18n="footer_text">Telegram bot orqali savdo, account videolari va to'g'ridan-to'g'ri bog'lanish uchun premium showcase.</p>
+      </div>
+    </footer>
+
+    <script src="{% static 'site/js/site.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+  </body>
+  </html>

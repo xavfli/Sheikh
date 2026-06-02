@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Sheikh{% endblock %}
+
+{% block content %}
+  <main class="page-shell">
+    <section class="hero-panel">
+      <div class="hero-copy reveal">
+        <span class="eyebrow" data-i18n="hero_badge">Elite PUBG Accounts</span>
+        <h1 data-i18n="hero_title">Sheikh premium marketplace for elite gaming accounts</h1>
+        <p data-i18n="hero_text">
+          Accountlar narxi, category, video preview, rank, skins, K/D va boshqa ma'lumotlar professional katalog ko'rinishida chiqadi.
+          Sotib olingandan keyin credential ochiladi, buyurtma esa Telegramga ham yuboriladi.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#catalog" data-i18n="hero_cta_catalog">Catalogni ko'rish</a>
+          <a class="btn btn-secondary" href="#filters" data-i18n="hero_cta_filter">Qidiruv va filter</a>
+        </div>
+      </div>
+
+      <div class="hero-stage reveal">
+        <div class="hero-neon-frame"></div>
+        <div class="parallax-layer parallax-grid" data-depth="12"></div>
+        <div class="parallax-layer parallax-glow" data-depth="20"></div>
+        <div class="fog fog-one"></div>
+        <div class="fog fog-two"></div>
+        <div class="particle-field">
+          <span class="particle particle-1"></span>
+          <span class="particle particle-2"></span>
+          <span class="particle particle-3"></span>
+          <span class="particle particle-4"></span>
+          <span class="particle particle-5"></span>
+          <span class="particle particle-6"></span>
+          <span class="particle particle-7"></span>
+          <span class="particle particle-8"></span>
+        </div>
+        <div class="orb orb-one"></div>
+        <div class="orb orb-two"></div>
+        <div class="hero-preview-grid">
+          {% for account in featured_accounts %}
+            <article class="hero-preview-card tilt-card" style="background-image: linear-gradient(180deg, rgba(8,8,8,0.14), rgba(8,8,8,0.82)), url('{{ account.display_image }}');">
+              <span>{{ account.rank_tier }}</span>
+              <strong>{{ account.title }}</strong>
+            </article>
+          {% endfor %}
+        </div>
+        <div class="stage-card main tilt-card">
+          <span data-i18n="inventory_pulse">Inventory Pulse</span>
+          <strong>{{ stats.accounts }} ta live account</strong>
+          <p data-i18n="inventory_text">Filter, category va provider bo'yicha sotuvga tayyor lotlar.</p>
+        </div>
+        <div class="scan-line"></div>
+      </div>
+    </section>
+
+    <section class="stats-row reveal">
+      <article class="stat-box">
+        <strong>{{ stats.accounts }}</strong>
+        <span data-i18n="stat_account">Account</span>
+      </article>
+      <article class="stat-box">
+        <strong>{{ stats.featured }}</strong>
+        <span data-i18n="stat_featured">Featured</span>
+      </article>
+      <article class="stat-box">
+        <strong>{{ stats.platforms }}</strong>
+        <span data-i18n="stat_platform">Platform</span>
+      </article>
+      <article class="stat-box">
+        <strong>{{ stats.sold }}</strong>
+        <span data-i18n="sold_access">Sold Access</span>
+      </article>
+      <article class="stat-box">
+        <strong>3</strong>
+        <span data-i18n="stat_provider">Payment provider</span>
+      </article>
+    </section>
+
+    <section class="category-showcase reveal" id="game-showcase">
+      <div class="section-head">
+        <span class="eyebrow" data-i18n="categories">Kategoriler</span>
+        <h2 id="game-showcase-title">{{ active_showcase.label }} kategoriyalari</h2>
+      </div>
+      {% for slug, item in game_navigation.items %}
+        <div class="game-panel {% if active_game == slug %}is-active{% endif %}" data-game-panel="{{ slug }}" data-game-label="{{ item.label }}" data-game-heading="{{ item.catalog_heading }}">
+          <div class="category-card-grid">
+            {% for card in item.cards %}
+              <article class="category-visual-card tilt-card">
+                <div class="category-visual-image" style="background-image: linear-gradient(180deg, rgba(255,190,0,0.1), rgba(12,12,12,0.14)), url('{{ card.image }}');"></div>
+                <strong>{{ card.title }}</strong>
+              </article>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </section>
+
+    <section class="feature-band reveal" id="showcase">
+      <div>
+        <span class="eyebrow" data-i18n="why_build">Why This Build</span>
+        <h2 data-i18n="why_build_title">Payment, media upload, filter va premium motion bir loyihada</h2>
+      </div>
+      <div class="feature-list">
+        <article class="tilt-card">
+          <strong data-i18n="feature_media">Admin media</strong>
+          <p data-i18n="feature_media_text">Admin panelda rasm upload, video file yoki embed link orqali kontent boshqariladi.</p>
+        </article>
+        <article class="tilt-card">
+          <strong data-i18n="feature_provider">Provider checkout</strong>
+          <p data-i18n="feature_provider_text">Stripe Checkout, Click redirect va Payme checkout/merchant callback oqimi tayyorlangan.</p>
+        </article>
+        <article class="tilt-card">
+          <strong data-i18n="feature_telegram">Telegram alert</strong>
+          <p data-i18n="feature_telegram_text">To'lov tasdiqlangach buyurtma ma'lumoti Telegram botga yuboriladi.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="filter-panel reveal" id="filters">
+      <div class="section-head">
+        <span class="eyebrow" data-i18n="search_filter">Search & Filter</span>
+        <h2 id="game-filter-title">{% if active_game == "pubg-mobile" %}Accountlarni aniq tanlang{% else %}{{ active_showcase.label }} bo'yicha tez filter{% endif %}</h2>
+      </div>
+      <div class="game-panel {% if active_game == 'pubg-mobile' %}is-active{% endif %}" data-game-panel="pubg-mobile">
+        <form class="filter-form" method="get">
+          <input type="hidden" name="game" value="pubg-mobile" />
+          <input type="text" name="q" placeholder="Qidiruv: conqueror, skin, ace..." value="{{ filters.q }}" />
+          <select name="category">
+            <option value="">Barcha category</option>
+            {% for category in categories %}
+              <option value="{{ category.slug }}" {% if filters.category == category.slug %}selected{% endif %}>
+                {{ category.name }}
+              </option>
+            {% endfor %}
+          </select>
+          <select name="platform">
+            <option value="">Barcha platform</option>
+            <option value="Steam" {% if filters.platform == "Steam" %}selected{% endif %}>Steam</option>
+            <option value="Mobile" {% if filters.platform == "Mobile" %}selected{% endif %}>Mobile</option>
+          </select>
+          <input type="text" name="rank" placeholder="Rank: Ace, Conqueror..." value="{{ filters.rank }}" />
+          <input type="number" name="min_price" placeholder="Min $" value="{{ filters.min_price }}" />
+          <input type="number" name="max_price" placeholder="Max $" value="{{ filters.max_price }}" />
+          <button class="btn btn-primary" type="submit" data-i18n="filter_btn">Filterlash</button>
+        </form>
+        <div class="category-pills">
+          <a href="?game=pubg-mobile" class="{% if not filters.category %}is-active{% endif %}" data-i18n="all">Barchasi</a>
+          {% for category in categories %}
+            <a href="?game=pubg-mobile&category={{ category.slug }}" class="{% if filters.category == category.slug %}is-active{% endif %}">
+              {{ category.name }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% for slug, item in game_navigation.items %}
+        {% if slug != 'pubg-mobile' %}
+          <div class="game-panel {% if active_game == slug %}is-active{% endif %}" data-game-panel="{{ slug }}">
+            <div class="game-note">
+              <p data-i18n="game_note">{{ item.label }} uchun alohida vitrin katalog ochilgan. Pastdagi kartalardan kerakli lotni tanlashingiz mumkin.</p>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </section>
+
+    <section class="catalog-section" id="catalog">
+      <div class="section-head reveal">
+        <span class="eyebrow" data-i18n="catalog">Catalog</span>
+        <h2 id="game-catalog-title">{{ active_showcase.catalog_heading }}</h2>
+      </div>
+      <div class="game-panel {% if active_game == 'pubg-mobile' %}is-active{% endif %}" data-game-panel="pubg-mobile">
+        <div class="catalog-grid">
+          {% for account in accounts %}
+            <article class="account-card reveal tilt-card">
+              <div class="account-cover" style="background-image: linear-gradient(180deg, rgba(10,10,10,0.05), rgba(10,10,10,0.2)), url('{{ account.display_image }}');">
+                <span class="account-rank">{{ account.rank_tier }}</span>
+                <div class="account-badge">{{ account.skins_count }} skins</div>
+              </div>
+              <div class="account-body">
+                <h3>{{ account.title }}</h3>
+                <p class="stock-label">Stokda Mavcut</p>
+                <div class="meta-row">
+                  <span>{{ account.platform }}</span>
+                  <span>{{ account.region }}</span>
+                  {% if account.category %}<span>{{ account.category.name }}</span>{% endif %}
+                </div>
+                <div class="price-row">
+                  <span class="old-price">${% widthratio account.price 10 13 %}</span>
+                  <strong class="new-price">${{ account.price }}</strong>
+                </div>
+                <a class="btn btn-primary card-cta" href="{% url 'market:account_detail' account.slug %}">Sotib Olish</a>
+              </div>
+            </article>
+          {% empty %}
+            <article class="empty-card reveal">
+              <h3>Natija topilmadi</h3>
+              <p>Filterlarni o'zgartirib qayta urinib ko'ring.</p>
+            </article>
+          {% endfor %}
+        </div>
+      </div>
+      {% for slug, items in game_catalogs.items %}
+        <div class="game-panel {% if active_game == slug %}is-active{% endif %}" data-game-panel="{{ slug }}">
+          <div class="catalog-grid">
+            {% for item in items %}
+              <article class="account-card reveal tilt-card">
+                <div class="account-cover" style="background-image: linear-gradient(180deg, rgba(10,10,10,0.05), rgba(10,10,10,0.22)), url('{{ item.image }}');">
+                  <span class="account-rank">{{ item.category }}</span>
+                  <div class="account-badge">{{ item.badge }}</div>
+                </div>
+                <div class="account-body">
+                  <h3>{{ item.title }}</h3>
+                  <p class="stock-label">{{ item.stock }}</p>
+                  <div class="meta-row">
+                    <span>{{ item.platform }}</span>
+                    <span>{{ item.region }}</span>
+                    <span>{{ item.category }}</span>
+                  </div>
+                  <div class="price-row">
+                    <span class="old-price">${{ item.old_price }}</span>
+                    <strong class="new-price">${{ item.price }}</strong>
+                  </div>
+                  <a class="btn btn-primary card-cta" href="{% url 'market:login' %}">{{ item.action_label }}</a>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </section>
+  </main>
+{% endblock %}

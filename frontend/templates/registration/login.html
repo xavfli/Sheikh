@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Kirish{% endblock %}
+
+{% block content %}
+  <main class="auth-shell">
+    <section class="auth-card reveal">
+      <span class="eyebrow" data-i18n="website_login">Website Login</span>
+      <h1 data-i18n="login_title">Accountga kirish</h1>
+      <form method="post" class="auth-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+          <label>
+            <span>{{ field.label }}</span>
+            {{ field }}
+            {{ field.errors }}
+          </label>
+        {% endfor %}
+        <button class="btn btn-primary btn-block" type="submit" data-i18n="nav_login">Kirish</button>
+      </form>
+      <p class="auth-switch"><span data-i18n="no_account">Account yo'qmi?</span> <a href="{% url 'market:signup' %}" data-i18n="signup_now">Ro'yxatdan o'ting</a></p>
+    </section>
+  </main>
+{% endblock %}

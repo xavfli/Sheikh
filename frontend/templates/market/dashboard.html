@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Kabinet{% endblock %}
+
+{% block content %}
+  <main class="page-shell dashboard-shell">
+    <section class="dashboard-hero reveal">
+      <div class="dashboard-hero-copy">
+        <span class="eyebrow" data-i18n="nav_dashboard">Dashboard</span>
+        <h1 data-i18n="my_purchases">Mening sotib olgan accountlarim</h1>
+        <p class="muted-text">
+          Sotib olingan accountlar, credential access va to'lov holatlari shu yerdan boshqariladi.
+        </p>
+        <div class="dashboard-hero-actions">
+          <a class="btn btn-primary" href="{% url 'market:home' %}#catalog">Premium accountlarni ko'rish</a>
+          <a class="btn btn-secondary" href="{% url 'market:home' %}#filters">Filterlash</a>
+        </div>
+      </div>
+      <div class="dashboard-hero-stage">
+        <div class="dashboard-stage-glow dashboard-stage-glow-one"></div>
+        <div class="dashboard-stage-glow dashboard-stage-glow-two"></div>
+        <div class="dashboard-stage-images">
+          <article class="dashboard-stage-image dashboard-stage-image-lg" style="background-image: linear-gradient(180deg, transparent 10%, rgba(0, 0, 0, 0.72)), url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80');">
+            <span>Elite Inventory</span>
+            <strong>PUBG Account Vault</strong>
+          </article>
+          <article class="dashboard-stage-image dashboard-stage-image-sm" style="background-image: linear-gradient(180deg, transparent 10%, rgba(0, 0, 0, 0.76)), url('https://images.unsplash.com/photo-1542751110-97427bbecf20?auto=format&fit=crop&w=1200&q=80');">
+            <span>Instant Access</span>
+            <strong>Login & Password Ready</strong>
+          </article>
+        </div>
+        <div class="dashboard-summary">
+          <article class="dashboard-stat">
+            <b class="dashboard-stat-badge">Live</b>
+            <span>Accountlar</span>
+            <strong data-countup="{{ purchases|length }}">0</strong>
+            <small>Premium inventory access</small>
+            <div class="dashboard-stat-progress">
+              <i style="width:{% if purchases %}72%{% else %}14%{% endif %};"></i>
+            </div>
+          </article>
+          <article class="dashboard-stat">
+            <b class="dashboard-stat-badge">Live</b>
+            <span>Transactions</span>
+            <strong data-countup="{{ transactions|length }}">0</strong>
+            <small>Payment activity stream</small>
+            <div class="dashboard-stat-progress">
+              <i style="width:{% if transactions %}68%{% else %}10%{% endif %};"></i>
+            </div>
+          </article>
+          <article class="dashboard-stat dashboard-stat-accent">
+            <b class="dashboard-stat-badge">Secure</b>
+            <span>Access</span>
+            <strong>{% if purchases %}Open{% else %}Standby{% endif %}</strong>
+            <small>{% if purchases %}Credential reveal enabled{% else %}Awaiting first purchase{% endif %}</small>
+            <div class="dashboard-stat-progress">
+              <i style="width:{% if purchases %}100%{% else %}36%{% endif %};"></i>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section reveal">
+      <div class="dashboard-section-head">
+        <div>
+          <span class="eyebrow">Inventory</span>
+          <h2 data-i18n="my_purchases">Mening sotib olgan accountlarim</h2>
+        </div>
+        <a class="btn btn-secondary dashboard-link" href="{% url 'market:home' %}#catalog">Catalogga o'tish</a>
+      </div>
+
+      <div class="purchase-list dashboard-purchase-list">
+      {% for purchase in purchases %}
+        <article class="purchase-card dashboard-purchase-card reveal tilt-card">
+          <div class="dashboard-purchase-media" style="background-image: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.68)), url('{{ purchase.account.display_image }}');">
+            <span class="dashboard-purchase-rank">{{ purchase.account.rank_tier }}</span>
+            <strong>{{ purchase.account.platform }}</strong>
+          </div>
+          <div class="dashboard-purchase-body">
+            <div>
+              <h3>{{ purchase.account.title }}</h3>
+              <p>{{ purchase.account.short_description }}</p>
+              <div class="dashboard-purchase-meta">
+                <span>{{ purchase.account.category.name|default:"Premium" }}</span>
+                <span>{{ purchase.account.region }}</span>
+                <span>Lv {{ purchase.account.level }}</span>
+              </div>
+            </div>
+            <div class="purchase-secret dashboard-secret-box">
+              <strong>Login: {{ purchase.account.pubg_login }}</strong>
+              <strong>Password: {{ purchase.account.pubg_password }}</strong>
+              <span>${{ purchase.price_paid }} paid</span>
+            </div>
+          </div>
+        </article>
+      {% empty %}
+        <article class="empty-card dashboard-empty-card reveal">
+          <span class="eyebrow">Inventory Empty</span>
+          <h3 data-i18n="no_purchase">Hali xarid yo'q. Catalogdan account tanlang.</h3>
+          <p class="muted-text">
+            PUBG Mobile, Mobile Legends yoki Steam bo'limidan premium account tanlab, to'lovdan keyin shu yerda login va parol ochiladi.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="{% url 'market:home' %}#catalog">Catalogni ochish</a>
+            <a class="btn btn-secondary" href="{% url 'market:home' %}#filters">Filterlash</a>
+          </div>
+        </article>
+      {% endfor %}
+      </div>
+    </section>
+
+    <section class="transaction-section dashboard-section reveal">
+      <div class="dashboard-section-head">
+        <span class="eyebrow" data-i18n="transactions">Transactions</span>
+        <h2 data-i18n="recent_payments">So'nggi payment harakatlari</h2>
+      </div>
+      <div class="transaction-list dashboard-transaction-list">
+        {% for item in transactions %}
+          <article class="transaction-item dashboard-transaction-item">
+            <div>
+              <strong>{{ item.account.title }}</strong>
+              <p class="muted-text">Order ID: {{ item.order_id }}</p>
+            </div>
+            <div class="dashboard-transaction-meta">
+              <span>{{ item.get_provider_display }}</span>
+              <span class="transaction-status transaction-status-{{ item.status }}">{{ item.get_status_display }}</span>
+              <span>{{ item.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+          </article>
+        {% empty %}
+          <article class="transaction-item dashboard-transaction-item dashboard-transaction-empty">
+            <strong>Transaction yo'q</strong>
+            <span class="muted-text">Birinchi to'lovdan keyin payment harakatlari shu yerda ko'rinadi.</span>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+{% endblock %}
