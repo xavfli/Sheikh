@@ -236,6 +236,69 @@ python manage.py set_telegram_webhook
 
 Shundan keyin admin panelda account qo'shsangiz yoki o'zgartirsangiz, bot ham shu bazadan avtomatik yangi ma'lumotni ko'radi.
 
+## Render Free Deploy
+
+Render uchun loyiha ichida tayyor fayllar bor:
+
+- `render.yaml` - Render blueprint sozlamasi
+- `build.sh` - dependency, static va migration build komandasi
+- `requirements.txt` - `gunicorn`, `whitenoise`, `dj-database-url` va Postgres driver bilan
+
+Render panelda eng oson yo'l:
+
+1. GitHub repo `https://github.com/xavfli/Sheikh.git` ni Renderga ulang
+2. `New +` -> `Blueprint` yoki `Web Service` tanlang
+3. Agar `Blueprint` tanlasangiz, Render `render.yaml` ni o'zi o'qiydi
+4. Agar `Web Service` tanlasangiz, quyidagilarni qo'lda kiriting
+
+```bash
+Build Command:
+bash build.sh
+
+Start Command:
+gunicorn --pythonpath backend config.wsgi:application
+```
+
+Render environment variables:
+
+```env
+DEBUG=False
+ALLOWED_HOSTS=.onrender.com
+CSRF_TRUSTED_ORIGINS=https://*.onrender.com
+TELEGRAM_BOT_TOKEN=BotFather_bergan_haqiqiy_token
+TELEGRAM_BOT_USERNAME=sheikh_pbot
+TELEGRAM_CONTACT_USERNAME=khVO1D
+```
+
+`SITE_URL` ni Render URL chiqqandan keyin qo'ying:
+
+```env
+SITE_URL=https://your-render-service.onrender.com
+```
+
+`SECRET_KEY` ni Render blueprint avtomatik generate qiladi. Agar qo'lda deploy qilsangiz, Render env ichida kuchli random qiymat bering.
+
+Deploydan keyin:
+
+```bash
+python manage.py createsuperuser
+python manage.py set_telegram_webhook
+```
+
+Render shell orqali komanda ishlatish:
+
+1. Render service ichiga kiring
+2. `Shell` bo'limini oching
+3. yuqoridagi komandalarni bajaring
+
+Muhim eslatma:
+
+- Render free web service uxlab qolishi mumkin, birinchi ochilish sekinroq bo'ladi
+- SQLite Render free deployda doimiy saqlanishga kafolat bermaydi
+- Admin paneldan upload qilingan rasmlar/video redeploydan keyin yo'qolishi mumkin
+- Barqaror production uchun `DATABASE_URL` bilan Postgres va media uchun tashqi storage ishlatish yaxshi
+- Hozirgi bepul variant demo va boshlang'ich savdo uchun yetadi, account rasmlarini URL orqali qo'yish eng xavfsiz
+
 ## Environment Variables
 
 Telegram savdo oqimi uchun asosiy qiymatlar:

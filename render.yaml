@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: sheikh
+    env: python
+    plan: free
+    buildCommand: bash build.sh
+    startCommand: gunicorn --pythonpath backend config.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.4
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://*.onrender.com"
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_BOT_USERNAME
+        sync: false
+      - key: TELEGRAM_CONTACT_USERNAME
+        sync: false
