@@ -13,6 +13,8 @@ services:
         generateValue: true
       - key: DEBUG
         value: "False"
+      - key: LOAD_DEMO_DATA
+        value: "true"
       - key: ALLOWED_HOSTS
         value: ".onrender.com"
       - key: CSRF_TRUSTED_ORIGINS

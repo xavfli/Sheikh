@@ -343,6 +343,7 @@ On Commit
 ALLOWED_HOSTS=.onrender.com
 CSRF_TRUSTED_ORIGINS=https://*.onrender.com
 DEBUG=False
+LOAD_DEMO_DATA=True
 PYTHON_VERSION=3.12.4
 SECRET_KEY=<Render Generate tugmasi bilan yarating>
 TELEGRAM_BOT_TOKEN=<BotFather bergan haqiqiy token>
@@ -373,6 +374,7 @@ Muhim:
 - `TELEGRAM_BOT_USERNAME` ni `@` siz yozing
 - `TELEGRAM_CONTACT_USERNAME` ni ham `@` siz yozing
 - `DATABASE_URL` bo'sh string bo'lib turmasin, yo haqiqiy URL bo'lsin, yo umuman bo'lmasin
+- `LOAD_DEMO_DATA=True` bo'lsa Render deploy paytida demo accountlar avtomatik yaratiladi
 
 ## Render Postgres Ochish
 
@@ -417,6 +419,12 @@ Deploy muvaffaqiyatli chiqqandan keyin:
 ```bash
 python manage.py createsuperuser
 python manage.py set_telegram_webhook
+```
+
+Demo data avtomatik tushmagan bo'lsa, Render `Shell` ichida qo'lda ham ishga tushirishingiz mumkin:
+
+```bash
+python manage.py seed_demo
 ```
 
 Webhook uchun `SITE_URL` to'g'ri bo'lishi kerak. Masalan:
