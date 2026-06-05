@@ -8,3 +8,7 @@ python manage.py migrate
 if [ "${LOAD_DEMO_DATA:-false}" = "true" ]; then
   python manage.py seed_demo
 fi
+
+if [ -n "${ADMIN_PASSWORD:-}" ]; then
+  python manage.py ensure_admin
+fi

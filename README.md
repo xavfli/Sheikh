@@ -346,6 +346,9 @@ DEBUG=False
 LOAD_DEMO_DATA=True
 PYTHON_VERSION=3.12.4
 SECRET_KEY=<Render Generate tugmasi bilan yarating>
+ADMIN_USERNAME=admin
+ADMIN_EMAIL=admin@sheikh.uz
+ADMIN_PASSWORD=<kuchli maxfiy parol>
 TELEGRAM_BOT_TOKEN=<BotFather bergan haqiqiy token>
 TELEGRAM_BOT_USERNAME=sheikh_pbot
 TELEGRAM_CONTACT_USERNAME=khVO1D
@@ -375,6 +378,32 @@ Muhim:
 - `TELEGRAM_CONTACT_USERNAME` ni ham `@` siz yozing
 - `DATABASE_URL` bo'sh string bo'lib turmasin, yo haqiqiy URL bo'lsin, yo umuman bo'lmasin
 - `LOAD_DEMO_DATA=True` bo'lsa Render deploy paytida demo accountlar avtomatik yaratiladi
+- `ADMIN_PASSWORD` ni GitHub yoki README ichiga haqiqiy qiymatda yozmang, faqat Render Environment ichida saqlang
+
+### Render Admin
+
+Render Environment ichiga quyidagilarni qo'shing:
+
+```env
+ADMIN_USERNAME=admin
+ADMIN_EMAIL=admin@sheikh.uz
+ADMIN_PASSWORD=<o'zingiz tanlagan kuchli maxfiy parol>
+```
+
+Deploy paytida `build.sh` avtomatik `python manage.py ensure_admin` komandasini bajaradi. Admin mavjud bo'lmasa yaratiladi, mavjud bo'lsa email, parol va superuser huquqlari yangilanadi.
+
+Deploy muvaffaqiyatli tugagandan keyin admin panel:
+
+```text
+https://your-service-name.onrender.com/admin/
+```
+
+Kirish:
+
+```text
+Username: admin
+Password: Render Environment ichidagi ADMIN_PASSWORD
+```
 
 ## Render Postgres Ochish
 
