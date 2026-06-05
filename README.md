@@ -299,6 +299,153 @@ Muhim eslatma:
 - Barqaror production uchun `DATABASE_URL` bilan Postgres va media uchun tashqi storage ishlatish yaxshi
 - Hozirgi bepul variant demo va boshlang'ich savdo uchun yetadi, account rasmlarini URL orqali qo'yish eng xavfsiz
 
+## Render Panelga Tayyor Kiritish
+
+Quyidagilarni Render `Web Service` ichida aynan shu ko'rinishda kiriting.
+
+### Root Directory
+
+Bo'sh qoldiring.
+
+### Build Command
+
+```bash
+bash build.sh
+```
+
+### Start Command
+
+```bash
+gunicorn --pythonpath backend config.wsgi:application
+```
+
+### Health Check Path
+
+```text
+/healthz
+```
+
+### Pre-Deploy Command
+
+Bo'sh qoldiring, chunki migration `build.sh` ichida bor.
+
+### Auto-Deploy
+
+```text
+On Commit
+```
+
+### Environment Variables
+
+1-rasmdagi joyga quyidagilarni kiriting:
+
+```env
+ALLOWED_HOSTS=.onrender.com
+CSRF_TRUSTED_ORIGINS=https://*.onrender.com
+DEBUG=False
+PYTHON_VERSION=3.12.4
+SECRET_KEY=<Render Generate tugmasi bilan yarating>
+TELEGRAM_BOT_TOKEN=<BotFather bergan haqiqiy token>
+TELEGRAM_BOT_USERNAME=sheikh_pbot
+TELEGRAM_CONTACT_USERNAME=khVO1D
+```
+
+`DATABASE_URL` uchun 2 ta holat bor:
+
+- agar Render Postgres ulasangiz: `DATABASE_URL=<Render Postgres Internal Database URL>`
+- agar hozircha Postgres ishlatmasangiz: `DATABASE_URL` umuman qo'shmang yoki o'chirib tashlang
+
+`SITE_URL` ni ham qo'shing:
+
+```env
+SITE_URL=https://your-service-name.onrender.com
+```
+
+Misol:
+
+```env
+SITE_URL=https://sheikh.onrender.com
+```
+
+Muhim:
+
+- `SECRET_KEY` ni qo'lda yozmang, `Generate` tugmasi bilan yarating
+- `TELEGRAM_BOT_USERNAME` ni `@` siz yozing
+- `TELEGRAM_CONTACT_USERNAME` ni ham `@` siz yozing
+- `DATABASE_URL` bo'sh string bo'lib turmasin, yo haqiqiy URL bo'lsin, yo umuman bo'lmasin
+
+## Render Postgres Ochish
+
+2-rasm, 3-rasm va 4-rasm uchun to'liq tartib:
+
+1. Render dashboardda `New` -> `Postgres` bosing
+2. `Name` maydoniga yozing:
+
+```text
+Sheikh
+```
+
+3. `Project` ixtiyoriy, hohlasangiz bo'sh qoldiring
+4. `Database` maydonini bo'sh qoldirsangiz Render o'zi yaratadi
+5. `User` maydonini bo'sh qoldirsangiz Render o'zi yaratadi
+6. `Region` ni web service bilan bir xil qiling
+7. `PostgreSQL Version` sifatida `18` qoldirsa bo'ladi
+8. `Datadog API Key` bo'sh qolsin
+9. `Datadog Region` o'zgartirmasa ham bo'ladi
+10. `Storage` free uchun `1 GB`
+11. `Storage Autoscaling` `Disabled`
+12. `High Availability` `Disabled`
+13. Pastdagi `Create Database` ni bosing
+
+Database yaratilgandan keyin:
+
+1. O'sha Postgres service ichiga kiring
+2. `Info` yoki `Connect` bo'limidan `Internal Database URL` ni oling
+3. Web Service -> `Environment` ga kiring
+4. `DATABASE_URL` qo'shing
+5. Value ichiga o'sha `Internal Database URL` ni qo'ying
+6. `Save, rebuild, and deploy` bosing
+
+## Render Deploydan Keyin
+
+Deploy muvaffaqiyatli chiqqandan keyin:
+
+1. Render service ichiga kiring
+2. `Shell` bo'limini oching
+3. Quyidagi komandalarni ishga tushiring
+
+```bash
+python manage.py createsuperuser
+python manage.py set_telegram_webhook
+```
+
+Webhook uchun `SITE_URL` to'g'ri bo'lishi kerak. Masalan:
+
+```env
+SITE_URL=https://sheikh.onrender.com
+```
+
+Keyin Telegramda tekshiring:
+
+```text
+/start
+```
+
+## Render Xato Chiqsa
+
+Agar quyidagi xato chiqsa:
+
+```text
+ValueError: No support for ''
+```
+
+Bu `DATABASE_URL` noto'g'ri yoki bo'sh ekanini bildiradi. Yechim:
+
+- `DATABASE_URL` ni Render environment ichidan o'chiring
+- yoki haqiqiy Render Postgres `Internal Database URL` qo'ying
+
+Hozirgi loyiha kodi bo'sh yoki noto'g'ri `DATABASE_URL` bo'lsa SQLite'ga fallback qiladi, lekin Render panelda bo'sh qiymat qoldirmaslik baribir yaxshiroq.
+
 ## Environment Variables
 
 Telegram savdo oqimi uchun asosiy qiymatlar:

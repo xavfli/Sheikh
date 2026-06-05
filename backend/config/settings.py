@@ -72,7 +72,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
+DATABASE_URL = os.environ.get("DATABASE_URL", "").strip().strip('"').strip("'")
 
 DATABASES = {
     "default": {
@@ -80,8 +80,12 @@ DATABASES = {
         "NAME": PROJECT_ROOT / "db.sqlite3",
     }
 }
-if DATABASE_URL:
-    DATABASES["default"] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+if DATABASE_URL and "://" in DATABASE_URL:
+    try:
+        DATABASES["default"] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+    except ValueError:
+        # Fallback to SQLite when Render or another host provides an empty/invalid DATABASE_URL.
+        pass
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
